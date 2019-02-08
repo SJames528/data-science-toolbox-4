@@ -1,3 +1,9 @@
+# TODO
+  - [ ] Dan: write scraper for github to generate dataset
+  - [ ] Kish + Sam: Initial draft of intro and maybe some stuff on LDA
+
+
+## Ideas
 
 ### Shellcode
 We can try to include shellcode as one of the programming languages: https://www.google.com/search?q=shellcode&ie=utf-8&oe=utf-8&client=firefox-b-ab
