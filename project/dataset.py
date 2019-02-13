@@ -1,3 +1,4 @@
+import json
 import time
 import requests
 
@@ -33,7 +34,9 @@ topics = [
     "payload",
 ]
 
-all_repos = []
+
+# Find the most popular repo's for each of the above topics
+repos = []
 
 for topic in topics:
     print(SEARCH_URL)
@@ -46,7 +49,7 @@ for topic in topics:
         headers=headers,
     )
     time.sleep(6)
-    repos = response.json().get("items")
+    repos += response.json().get("items")
 
     # Fetch all the searh results, not just the first page
     next_url = get_next_url(response.headers)
@@ -62,12 +65,39 @@ for topic in topics:
 
         next_url = get_next_url(response.headers)
 
-    # Filter to include small repos only
-    megabyte = 1000000
-    small_repos = [repo for repo in repos if repo.get("size", 0) < megabyte]
+# Save this repo list for later
+with open('../data/repo-list.json', 'w') as repo_list_file:
+    json.dump(repos, repo_list_file)
 
-    # Search results are ordered by number of stars each repo has, so fetch
-    # a maximum of 1000 repos.
-    top_repos = small_repos[0:1000]
+# Load repo list back in
+with open('../data/repo-list.json', 'r') as repo_list_file:
+    repos = json.load(repo_list_file)
 
-    all_repos += top_repos
+# Filter to include small repos only
+megabyte = 1000000
+repos = [repo for repo in repos if repo.get("size", 0) < megabyte]
+
+# To download the repo as a whole, use the html url the api gives:
+r = requests.get(repos[0]['html_url'] + '/archive/master.zip')
+
+# We've picked topics that roughly map to programming languages, but
+# there will still be a mix in each repo. For example, Python projects
+# may include make files, or small bits of frontend javascript. Here,
+# we navigate through each repo and pull out files which match a
+# programming language we want to model. The files in each repo are
+# then concatentated to form a document with a mixture of known
+# programming languages. Each of these composite files becomes a
+# labelled document in our model (consisting of a mixture of
+# topics/languages).
+
+language_file_names = {
+    'Javascript': ['.*\.js'],
+    'Markdown': ['.*\.md'],
+    'Python': ['.*\.py'],
+    'R': ['.*\.R'],
+    'C/C++': ['.*\.c', '.*\.h', '.*\.cpp'],
+    'Bash': ['\.sh'],
+    'Make': ['makefile'],
+}
+
+for repo in repos:
