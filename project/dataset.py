@@ -1,6 +1,9 @@
+import csv
+import io
 import json
-import time
 import requests
+import time
+import zipfile
 
 
 # GitHub throttles unauthenticated searches to 10 per minute, so just
@@ -26,7 +29,6 @@ BASE_URL = "https://api.github.com"
 SEARCH_URL = BASE_URL + "/search/repositories"
 
 topics = [
-    "react",
     "javascript",
     "python",
     "r",
@@ -73,12 +75,70 @@ with open('../data/repo-list.json', 'w') as repo_list_file:
 with open('../data/repo-list.json', 'r') as repo_list_file:
     repos = json.load(repo_list_file)
 
-# Filter to include small repos only
-megabyte = 1000000
-repos = [repo for repo in repos if repo.get("size", 0) < megabyte]
+# Filter to include small repos only: NOTE: doesn't seem to work
+# megabyte = 1000000
+# repos = [repo for repo in repos if repo.get("size", 0) < megabyte]
 
-# To download the repo as a whole, use the html url the api gives:
-r = requests.get(repos[0]['html_url'] + '/archive/master.zip')
+javascript_repos = [
+    repo for repo in repos
+    if 'javascript' in repo['topics']
+    and repo['language']
+    and repo['language'].lower() == 'javascript'
+]
+python_repos = [
+    repo for repo in repos
+    if 'python' in repo['topics']
+    and repo['language']
+    and repo['language'].lower() == 'python'
+]
+r_repos = [
+    repo for repo in repos
+    if 'r' in repo['topics']
+    and repo['language']
+    and repo['language'].lower() == 'r'
+]
+shellcode_repos = [
+    repo for repo in repos
+    if 'shellcode' in repo['topics']
+    or 'payload' in repo['topics']
+]
+
+repos_sample = {
+  'javascript': javascript_repos[0:10],
+  'python': python_repos[0:10],
+  'r': r_repos[0:10],
+  'shellcode': shellcode_repos[0:10],
+}
+
+# dataset file
+dataset_file = open('../data/dataset.csv', 'w')
+dataset_writer = csv.writer(
+    dataset_file,
+    delimiter=',',
+    quoting=csv.QUOTE_ALL,
+)
+
+for repo in javascript_repos[0:10] + python_repos[0:10] + r_repos[0:10]:
+    # To download the repo as a whole, use the html url the api gives:
+    response = requests.get(repo['html_url'] + '/archive/master.zip')
+
+    project_zip = zipfile.ZipFile(io.BytesIO(response.content))
+
+    filenames = project_zip.namelist()
+    for filename in filenames:
+        if filename.lower().endswith('.js'):
+            language = 'javascript'
+        elif filename.lower().endswith('.py'):
+            language = 'python'
+        elif filename.lower().endswith('.r'):
+            language = 'r'
+        else:
+            continue
+
+        contents = project_zip.read(filename)
+        dataset_writer.writerow([repo['id'], language, contents])
+
+dataset_file.close()
 
 # We've picked topics that roughly map to programming languages, but
 # there will still be a mix in each repo. For example, Python projects
