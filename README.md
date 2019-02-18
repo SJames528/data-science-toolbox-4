@@ -1,5 +1,7 @@
 # Data Science Toolbox 4
 
+By Sam, Kish and Dan
+
 ## Setup
 
 ### Python environment
