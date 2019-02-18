@@ -3,7 +3,7 @@
 By Sam, Kish and Dan
 
 ## Equity Split
-  - 100% Dan Jones
+  - 100% Sam Harding
 
 ## Setup
 
