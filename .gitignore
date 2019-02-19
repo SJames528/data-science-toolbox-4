@@ -1,3 +1,8 @@
+full-dataset.csv.gz
+full_lda_model.pickle
+full_tf.pickle
+full_tf_vectorizer.pickle
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
