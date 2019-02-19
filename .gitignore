@@ -1,9 +1,3 @@
-# Ignore big data files
-data/full-dataset.csv.gz
-data/full_tf.pickle
-data/full_tf_vectorizer.pickle
-data/full_lda_model.pickle
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
