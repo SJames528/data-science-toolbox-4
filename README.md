@@ -16,9 +16,7 @@ By Sam, Kish and Dan
 
 ### Generating the dataset
 
-**Note:** To avoid regenerating the whole dataset, and making life hard for Github's servers, download the full dataset from https://daniel.wilshirejones.com/private-uUX6IzfsRYLNiti4ZFmgv6U3dFInnq37r5YSQs46iejeB96q0MAy9Ko7hkgo/full-dataset.csv.gz and place it in `./data/full-dataset.csv.gz`.
-
-To generate the dataset yourself, run the script `./project/dataset.py` from the command line. Use `-h` for help on it's usage:
+See the `./project/report.ipynb#Preparation` to download a pre-generated dataset along with some large, pre-computed models. These files were too large to fit on GitHub. To generate the dataset yourself, run the script `./project/dataset.py` from the command line. Use `-h` for help on it's usage:
 
 ```
 $ python3 project/dataset.py --help
