@@ -2,9 +2,6 @@
 
 By Sam, Kish and Dan
 
-## Equity Split
-  - 100% Sam Harding
-
 ## Setup
 
 ### Python environment
